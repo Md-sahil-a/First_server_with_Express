@@ -1,3 +1,4 @@
+const { application } = require('express');
 const express = require('express');
 
 const PORT = 3000;
@@ -21,6 +22,32 @@ const data = [
     }
 ]
 
+//writing logging middleWare
+server.use((req, res, next) =>{
+    console.log(` ${req}, ${res}`);
+    next(); 
+})
+
+//express json middleWare
+
+server.use(express.json());
+
+server.post('/data', (req, res)=>{
+    if(!req.body.name){
+        return res.status(400).json({
+            error: 'Missing name'
+        })
+    }
+    const newdata = {
+        name: req.body.name,
+        id: data.length +1,
+    }
+    data.push(newdata);
+    res.json(newdata);
+
+
+})
+
 server.get('/', (req,res)=>{
     res.send('Welcome to the Server, add endpoints and get your data.');
 });
@@ -28,6 +55,8 @@ server.get('/', (req,res)=>{
 server.get('/data', (req,res)=>{
     res.json(data);
 });
+
+
 
 server.get('/data/:dataId', (res, req)=>{
     const dataId = Number(req.params.dataId);
